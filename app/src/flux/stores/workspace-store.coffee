@@ -40,6 +40,8 @@ class WorkspaceStore extends MailspringStore
         'core:pop-sheet': => @popSheet()
         'application:select-list-mode' : => @_onSelectLayoutMode("list")
         'application:select-split-mode' : => @_onSelectLayoutMode("split")
+        'application:select-splitHoriz-mode' : => @_onSelectLayoutMode("split", "horiz")
+        'application:select-splitVert-mode' : => @_onSelectLayoutMode("split", "vert")
       })
 
 
@@ -130,10 +132,13 @@ class WorkspaceStore extends MailspringStore
         if not item and @topSheet() is Sheet.File
           @popSheet()
 
-  _onSelectLayoutMode: (mode) =>
-    return if mode is @_preferredLayoutMode
+  _onSelectLayoutMode: (mode, direction) =>
+    if mode is @_preferredLayoutMode
+      @_onSelectLayoutMode('list')
     @_preferredLayoutMode = mode
     AppEnv.config.set('core.workspace.mode', @_preferredLayoutMode)
+    if direction?
+      AppEnv.config.set('core.workspace.splitMode', direction);
     @_rebuildMenu()
     @popToRootSheet()
     @trigger()

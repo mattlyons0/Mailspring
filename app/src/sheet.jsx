@@ -61,9 +61,16 @@ export default class Sheet extends React.Component {
     this.unlisteners = [];
   }
 
-  _columnFlexboxElements() {
+  _columnFlexboxElements(appending) {
     return this.state.columns.map((column, idx) => {
       const { maxWidth, minWidth, handle, location, width } = column;
+      let messageListVertical = false;
+
+      //Appending Logic for Vertical Split
+      if (this.state.mode === 'split' && AppEnv.config.get('core.workspace.splitMode') === 'vert') {
+        if (column.location.id === 'MessageList' && !appending || column.location.id !== 'MessageList' && appending)
+          return;
+      }
 
       if (minWidth !== maxWidth && maxWidth < FLEX) {
         return (
@@ -92,6 +99,7 @@ export default class Sheet extends React.Component {
         minWidth: minWidth,
         overflow: 'hidden',
       };
+
       if (maxWidth < FLEX) {
         style.width = maxWidth;
       } else {
@@ -197,11 +205,21 @@ export default class Sheet extends React.Component {
       zIndex: 1,
     };
 
+    if (this.state.mode === 'split' && AppEnv.config.get('core.workspace.splitMode') === 'vert') {
+      style.height = '50%';
+    }
+
     // Note - setting the z-index of the sheet is important, even though it's
     // always 1. Assigning a z-index creates a "stacking context" in the browser,
     // so z-indexes inside the sheet are relative to each other, but something in
     // one sheet cannot be on top of something in another sheet.
     // http://philipwalton.com/articles/what-no-one-told-you-about-z-index/
+
+    let appendElems = <div />;
+
+    if (this.state.mode === 'split' && AppEnv.config.get('core.workspace.splitMode') === 'vert') {
+      appendElems = this._columnFlexboxElements(true);
+    }
 
     return (
       <div
@@ -213,6 +231,8 @@ export default class Sheet extends React.Component {
         <Flexbox direction="row" style={{ overflow: 'hidden' }}>
           {this._columnFlexboxElements()}
         </Flexbox>
+
+        {appendElems}
       </div>
     );
   }

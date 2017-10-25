@@ -20,6 +20,11 @@ export default {
             default: 'list',
             enum: ['split', 'list'],
           },
+          splitMode: {
+            type: 'string',
+            default: 'horiz',
+            enum: ['horiz', 'vert'],
+          },
           systemTray: {
             type: 'boolean',
             default: true,

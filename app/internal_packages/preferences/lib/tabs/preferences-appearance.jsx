@@ -12,7 +12,8 @@ class AppearanceModeSwitch extends React.Component {
   constructor(props) {
     super();
     this.state = {
-      value: props.config.get('core.workspace.mode'),
+      value: props.config.get('core.workspace.mode') +
+      (props.config.get('core.workspace.mode') === 'list'?'':(props.config.get('core.workspace.splitMode').charAt(0).toUpperCase() + props.config.get('core.workspace.splitMode').slice(1))),
     };
   }
 
@@ -27,7 +28,7 @@ class AppearanceModeSwitch extends React.Component {
   };
 
   _renderModeOptions() {
-    return ['list', 'split'].map(mode => (
+    return ['list', 'splitHoriz', 'splitVert'].map(mode => (
       <AppearanceModeOption
         mode={mode}
         key={mode}
@@ -61,7 +62,8 @@ const AppearanceModeOption = function AppearanceModeOption(props) {
 
   const label = {
     list: 'Single Panel',
-    split: 'Two Panel',
+    splitHoriz: 'Two Panel',
+    splitVert: 'Two Panel Vert.',
   }[props.mode];
 
   return (
